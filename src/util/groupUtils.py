@@ -13,6 +13,9 @@ from contextSummary import *
 GROUP_DECLARATIONS_ENUMERATED = "GroupsEnumerated"
 GROUP_DECLARATION_PREFIX = "Group"
 
+MEMBERS_ENUMERATED = "MembersEnumerated"
+MEMBER_PREFIX = "Member"
+
 def getDeclaredMemberships(summary):
     """
     In Java: getDeclaredMemberships
@@ -23,26 +26,51 @@ def getDeclaredMemberships(summary):
         result.append(summary.get(GROUP_DECLARATION_PREFIX + str(i)))
     return result
     
-def addToGroups(summary, gId):
+def addDeclaredGroupMembership(summary, gId):
     """
-    addDeclaredGroupMembership
+    add gId into the membership, and re-enumerate
+    ??? Why we just append the new one ???
     """
-    groups = getGroups(summary)
-    
+    declaredMemberships = getDeclaredMemberships(summary)
+    # declaredMemberships.append(gId)
+    #print declaredMemberships
 
-def checkGroupMembership(summary, groupId):
+    # I don't think this is necessary
+    # for i, g in enumerate(declaredMemberships):
+    #     summary.put(GROUP_DECLARATION_PREFIX + str(i), g)
+    length = len(declaredMemberships)
+    summary.put(GROUP_DECLARATION_PREFIX + str(length), gId)
+        
+    summary.put(GROUP_DECLARATIONS_ENUMERATED, length + 1)
+
+def declaresGroupMembership(summary, groupId):
     """
     Check summary is a member of groupId
     In Java implementation: declaresGroupMembership
     """
     # 1. get group of summary
     groups = getDeclaredMemberships(summary)
-    print groups
+    #print groups
     return groupId in groups
     
+def addGroupMember(groupSummary, id):
+    """
+    For the group summary add id as its member
+    """
+    if groupSummary.containsKey(MEMBERS_ENUMERATED):
+        membersEnumerated = groupSummary.get(MEMBERS_ENUMERATED)
+    else:
+        membersEnumerated = 0
+        
+    groupSummary.put(MEMBER_PREFIX + str(membersEnumerated), id)
+    groupSummary.put(MEMBERS_ENUMERATED, membersEnumerated + 1)
+    
+def getGroupMembers(groupSummary):
+    members = []
+    membersEnumerated = groupSummary.get(MEMBERS_ENUMERATED)
+    
 if __name__ == "__main__":
-    db = {"GroupsEnumerated":3,
-          "Group0":0,"Group1":1,"Group2":2
-          }
-    summary = ContextSummary(db)
-    print checkGroupMembership(summary, 4)
+    sys.path.append("../../test/util")
+    from testGroupUtils import *
+    
+    unittest.main()
