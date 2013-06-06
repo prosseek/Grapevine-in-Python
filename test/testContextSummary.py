@@ -8,7 +8,7 @@ class TestContextSummary(unittest.TestCase):
         db = {"GroupsEnumerated":3,
               "Group0":0,"Group1":1,"Group2":2
               }
-        self.summary = ContextSummary(db)
+        self.summary = ContextSummary(1, db)
         
     def test_get(self):
         self.assertEqual(None, self.summary.get("FOO"))
@@ -27,5 +27,10 @@ class TestContextSummary(unittest.TestCase):
         self.assertFalse(self.summary.containsKey("FOO"))
         self.assertTrue(self.summary.containsKey("Group0"))
         
+    def test_remove(self):
+        self.assertTrue(self.summary.containsKey("Group0"))
+        self.summary.remove("Group0")
+        self.assertFalse(self.summary.containsKey("Group0"))
+        
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)
