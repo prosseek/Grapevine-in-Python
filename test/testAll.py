@@ -2,58 +2,43 @@ import unittest
 import sys
 import os
 
-def capitalize(str):
-    return str[:1].upper() + str[1:]
+suiteString = """
+def suite():
+    test_suite = unittest.TestSuite()
+    {s}
+    return test_suite
+"""
 
 def getTestNames():
+    def capitalize(str):
+        return str[:1].upper() + str[1:]
     # directory walker
     db = {}
-    for dirname, dirnames, filenames in os.walk('.'): # (os.path.abspath('.')):
+    for dirname, dirnames, filenames in os.walk('.'): 
         newDirName = "" if os.path.basename(dirname) == '.' else os.path.basename(dirname) + "."
-        #print newDirName
         for filename in filenames:
             if filename.startswith("__"): continue
             if filename.endswith("pyc"): continue
             if filename == "testAll.py": continue
             filenameWithoutExtension = os.path.splitext(filename)[0]
             capitalizedFileName = capitalize(filenameWithoutExtension)
-            fromName = newDirName + filenameWithoutExtension
-            
+            fromName = newDirName + filenameWithoutExtension            
             db[capitalizedFileName] = fromName
 
     importString = ""
-    testDbString = "testDb = {"
+    test_suiteString = ""
     for (key, value) in db.items():
         importString += "from %s import %s\n" % (value, key)
-        testDbString += '"%s":%s,\n' % (key, key)
-
-    testDbString = testDbString[:-2] + "}\n\n"
+        test_suiteString += "test_suite.addTest(unittest.makeSuite(%s))\n    " % key
         
-    result = "%s\n%s" % (importString, testDbString)
-    #return importString
-    return result
-
-sys.path.append("../src/util")
-sys.path.append("../src")
-
-def suite():
-    """
-        Gather all the tests from this module in a test suite.
-    """
-    test_suite = unittest.TestSuite()
-    test_suite.addTest(unittest.makeSuite(TestContextSummary))
-    test_suite.addTest(unittest.makeSuite(TestGroupUtils))
-    return test_suite
+    generated_code = "%s\n%s" % (importString, suiteString.format(s = test_suiteString))
+    return generated_code
 
 if __name__ == "__main__":
-    stringToEval = getTestNames()
-    exec(stringToEval)
-    for i in testDb.keys(): 
-        print "Testing: " + i
-        testName = testDb[i]
-        suite = unittest.TestLoader().loadTestsFromTestCase(testName)
-        unittest.TextTestRunner(verbosity=2).run(suite)
+    sys.path.append("../src/util")
+    sys.path.append("../src")
+    exec(getTestNames())
 
-    #unittest.TextTestRunner(verbosity=2).run(suite())
+    unittest.TextTestRunner(verbosity=2).run(suite())
     
     
