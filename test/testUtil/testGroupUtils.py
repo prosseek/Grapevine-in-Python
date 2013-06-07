@@ -1,10 +1,13 @@
 import unittest
 import sys
 
-sys.path.append("../../src/util")
+# src should come first as the util.groupUtils things
 sys.path.append("../../src")
+sys.path.append("../../src/util")
+
 from groupUtils import *
 from contextSummary import *
+from groupContextSummary import *
 
 class TestGroupUtils(unittest.TestCase):  
     def setUp(self):
@@ -34,13 +37,13 @@ class TestGroupUtils(unittest.TestCase):
         self.aggregatedIds3 = [110,120,130]
         
         groupDbNull = {}
-        self.groupSummaryNull = ContextSummary(100, groupDbNull)
+        self.groupSummaryNull = GroupContextSummary(100, groupDbNull)
         
         # groupSummary that I use for test
         groupDb = {"MembersEnumerated":3,
                    "Member0":1, "Member1":2, "Member2":3}
         self.groupSummaryMembers = [1,2,3]
-        self.groupSummary = ContextSummary(101, groupDb)
+        self.groupSummary = GroupContextSummary(101, groupDb)
               
     def test_getDeclaredMemberships(self):
         groups = getDeclaredMemberships(self.summary)
@@ -197,5 +200,6 @@ class TestGroupUtils(unittest.TestCase):
         updateGroupAgg(self.groupSummary, summaries)
         
 if __name__ == "__main__":
+
     unittest.main(verbosity=2)
     

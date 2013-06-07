@@ -35,8 +35,10 @@ def getTestNames():
     return generated_code
 
 if __name__ == "__main__":
-    sys.path.append("../src/util")
     sys.path.append("../src")
+    sys.path.append("../src/util")
+
+    print getTestNames()
     exec(getTestNames())
 
     unittest.TextTestRunner(verbosity=2).run(suite())

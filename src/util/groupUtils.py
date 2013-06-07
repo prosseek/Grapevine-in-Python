@@ -59,14 +59,19 @@ def declaresGroupMembership(summary, groupId):
 def addGroupMember(groupSummary, id):
     """
     For the group summary add id as its member
+    *** id is added only when it's not already a member
     """
     if groupSummary.containsKey(MEMBERS_ENUMERATED):
         membersEnumerated = groupSummary.get(MEMBERS_ENUMERATED)
     else:
         membersEnumerated = 0
         
-    groupSummary.put(MEMBER_PREFIX + str(membersEnumerated), id)
-    groupSummary.put(MEMBERS_ENUMERATED, membersEnumerated + 1)
+    # ???
+    # add id only when id is not already a member
+    members = getGroupMembers(groupSummary)
+    if not (id in members):
+        groupSummary.put(MEMBER_PREFIX + str(membersEnumerated), id)
+        groupSummary.put(MEMBERS_ENUMERATED, membersEnumerated + 1)
     
 def getGroupMembers(groupSummary):
     members = []
@@ -181,7 +186,7 @@ def updateGroupAgg(groupSummary, summaries):
 
         
 if __name__ == "__main__":
-    sys.path.append("../../test/util")
+    sys.path.append("../../test/testUtil")
     from testGroupUtils import *
     
     unittest.main(verbosity=2)

@@ -1,4 +1,4 @@
-class ContextSummary:
+class ContextSummary(object):
     def __init__(self, id, db):
         self.db = db
         self.id = id
