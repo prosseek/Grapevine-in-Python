@@ -14,20 +14,16 @@ class GroupDefinition(object):
         gid = currentGroupSummary.getId()
         groupIds = getDeclaredMemberships(newSummary)
         
-        # newSummary should be a member of group
+        #print currentGroupSummary
         if gid in groupIds:
             if uid not in currentGroupSummary.getMemberIds():
                 currentGroupSummary.addMemberId(uid)
+        #print currentGroupSummary
     
     def handleGroupSummary(self, currentGroupSummary, newGroupSummary):
         memberIds = currentGroupSummary.getMemberIds()
         newMemberIds = newGroupSummary.getMemberIds()
         
-        #print memberIds
-        #print newMemberIds
-        
-        # add only the members thatt is not in the memberIds
-        # 1. find what is new in the newMemberIds
         newMemberIds = removeAll(newMemberIds, memberIds)
         #print newMemberIds
         currentGroupSummary.addMemberIds(newMemberIds)

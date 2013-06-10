@@ -1,13 +1,30 @@
+import copy
+import time
+
 class ContextSummary(object):
-    def __init__(self, id, db):
+    def __init__(self, uid, db, hops = 3, tau = 3, timestamp = None):
+        if timestamp is None: timestamp = time.time()
         self.db = db
-        self.id = id
+        self.uid = uid
+        #self.tau = tau
+        self.hops = hops
+        self.timestamp = timestamp
+        
+    def getTimestamp(self):
+        return self.timestamp
+    
+    def setTimestamp(self, timestamp):
+        self.timestamp = timestamp
         
     def __str__(self):
-        return str(self.db)
+        return "(%d)[%d]:%s" % (self.uid, self.hops, str(self.db))
+        
+    def __eq__(self, other):
+        # http://stackoverflow.com/questions/1227121/compare-object-instances-for-equality-by-their-attributes-in-python
+        return (self.uid == other.uid) and (self.db == other.db)
         
     def getId(self):
-        return self.id
+        return self.uid
         
     def get(self, key):
         if key in self.db:
@@ -24,6 +41,31 @@ class ContextSummary(object):
         if self.containsKey(key):
             del self.db[key]
             
+    def getWireCopy(self):
+        # return new LabeledContextSummary(this);
+        return copy.deepcopy(self)
+        
+    def getCopy(self):
+        ### TEMP
+        return self.getWireCopy()
+        
+    def incrementHops(self):
+        self.hops += 1
+        
+    # def getTau(self):
+    #     return self.tau;
+    #     
+    # def setTau(self, tau):
+    #     self.tau = tau
+        
+    def getHops(self):
+        return self.hops
+        
+    def setHops(self, hops):
+        self.hops = hops
+        
+    # def getCopy(self):
+    #     pass
         
 if __name__ == "__main__":
     import sys

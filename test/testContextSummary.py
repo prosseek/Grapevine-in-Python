@@ -32,5 +32,43 @@ class TestContextSummary(unittest.TestCase):
         self.summary.remove("Group0")
         self.assertFalse(self.summary.containsKey("Group0"))
         
+    def test_equal(self):
+        db = {"GroupsEnumerated":3,
+              "Group0":0,"Group1":1,"Group2":2
+              }
+        summary = ContextSummary(1, db)
+        self.assertTrue(summary == self.summary)
+        
+    def test_getWireCopy(self):
+        copied = self.summary.getWireCopy()
+        self.assertTrue(copied == self.summary)
+        
+    def test_incrementHops(self):
+        oldHop = self.summary.getHops()
+        self.summary.incrementHops()
+        newHop = self.summary.getHops()
+        self.assertTrue(newHop == oldHop + 1)
+        
+    def test_setHops(self):
+        self.summary.setHops(1001)
+        self.assertTrue(1001 == self.summary.getHops())
+    
+    # def test_setTau(self):
+    #     self.summary.setTau(1000)
+    #     self.assertTrue(1000 == self.summary.getTau())
+        
+    def test_timestamp(self):
+        db = {"GroupsEnumerated":3,
+              "Group0":0,"Group1":1,"Group2":2
+              }
+        summary = ContextSummary(1, db)
+        time.sleep(0.1)
+        db2 = {"GroupsEnumerated":3,
+              "Group0":0,"Group1":1,"Group2":2
+              }
+        summary2 = ContextSummary(1, db2)
+        
+        self.assertTrue(summary.getTimestamp() < summary2.getTimestamp())
+        
 if __name__ == "__main__":
     unittest.main(verbosity=2)

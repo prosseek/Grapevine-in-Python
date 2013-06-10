@@ -21,6 +21,14 @@ class TestGroupContextSummary(unittest.TestCase):
         #print g
         getIds = g.getMemberIds()
         self.assertEqual(sorted(ids), sorted(getIds))
+    
+    def test_getGroupCopy(self):
+        ids = [1,2,3,4,5]
+        g = GroupContextSummary(101)
+        g.addMemberIds(ids)
+        
+        copiedGroup = g.getGroupCopy()
+        self.assertTrue(copiedGroup == g)
         
 if __name__ == "__main__":
     unittest.main(verbosity=2)
