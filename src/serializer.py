@@ -1,4 +1,5 @@
 from struct import *
+import sys
 
 class Serializer(object):
     def __init__(self, result = None):
@@ -59,31 +60,53 @@ class Serializer(object):
         elif type == "string":
             length = len(buffer)
             val = unpack("%ds" % length, buffer)
+            #print val
             return val[0]
         elif type == "timestamp":
             length = 13 # len(buffer)
             val = unpack("%ds" % length, buffer)
             return float(val[0])
+        else:
+            print >> sys.stderr, "***" + type + "***"
+            raise Exception("only int/string/timestamp allowed")
     
     def autoReadObjectData(self, type):
-        if type == "int": # 4 byte reader
+        if type == "int":
             length = 4
-            buffer = self.result[self.bufferPointer:self.bufferPointer + length]
-            val = unpack("i", buffer)
-            self.bufferPointer += length
-            return val[0]
-        elif type.startswith("string"):
+        elif type.startswith("string"): # input is string5 or something
             length = int(type[len("string"):])
-            buffer = self.result[self.bufferPointer:self.bufferPointer + length]
-            val = unpack("%ds" % length, buffer)
-            self.bufferPointer += length
-            return val[0]
+            type = "string"
         elif type == "timestamp":
+            # 13 is the string length converted from time.time()
             length = 13 # len(buffer)
-            buffer = self.result[self.bufferPointer:self.bufferPointer + length]
-            val = unpack("%ds" % length, buffer)
-            self.bufferPointer += length
-            return val[0]
+        else:
+            print >> sys.stderr, "***" + type + "***"
+            raise Exception("only int/string/timestamp allowed")
+            
+        buffer = self.result[self.bufferPointer:self.bufferPointer + length]
+        result = self.readObjectData(buffer, type)
+        #print result
+        self.bufferPointer += length
+        return result
+        
+        # if type == "int": # 4 byte reader
+        #     length = 4
+        #     buffer = self.result[self.bufferPointer:self.bufferPointer + length]
+        #     val = unpack("i", buffer)
+        #     self.bufferPointer += length
+        #     return val[0]
+        # elif type.startswith("string"):
+        #     length = int(type[len("string"):])
+        #     buffer = self.result[self.bufferPointer:self.bufferPointer + length]
+        #     val = unpack("%ds" % length, buffer)
+        #     self.bufferPointer += length
+        #     return val[0]
+        # elif type == "timestamp":
+        #     length = 13 # len(buffer)
+        #     buffer = self.result[self.bufferPointer:self.bufferPointer + length]
+        #     val = unpack("%ds" % length, buffer)
+        #     self.bufferPointer += length
+        #     return float(val[0])
     
     def reset(self):
         self.result = ""

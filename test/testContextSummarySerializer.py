@@ -28,5 +28,50 @@ class TestContextSummarySerializer(unittest.TestCase):
         #print summary.timestamp, type(summary.timestamp)
         self.assertTrue(summary == self.summary)
         
+            
+    def test_writeSummaries(self):
+        ### SETUP
+        db = {"GroupsEnumerated":3,
+              "Group0":0,"Group1":1,"Group2":2
+              }
+        summary = ContextSummary(1, db)
+        summary.setTimestamp(time.time())
+        time.sleep(0.01)
+        db2 = {"GroupsEnumerated":3,
+              "Group0":0,"Group1":1,"Group2":2
+              }
+        summary2 = ContextSummary(2, db2)
+        summary2.setTimestamp(time.time())
+        
+        self.s.writeSummaries([summary, summary2])
+        self.assertEqual(len(self.s.result), 182) #<-- two summaries summarizes up to 182
+        #print summary
+        # http://stackoverflow.com/questions/12871775/python-compress-ascii-string
+        # import zlib
+        # comp = zlib.compress(self.s.result)
+        # print len(comp) # 73
+        # print len(zlib.decompress(comp)) # 182
+        
+    def test_readSummaries(self):
+        db = {"GroupsEnumerated":3,
+              "Group0":0,"Group1":1,"Group2":2
+              }
+        summary = ContextSummary(1, db)
+        summary.setTimestamp(time.time())
+        time.sleep(0.01)
+        db2 = {"GroupsEnumerated":3,
+              "Group0":0,"Group1":1,"Group2":2
+              }
+        summary2 = ContextSummary(2, db2)
+        summary2.setTimestamp(time.time())
+        
+        expected = [summary, summary2]
+        res = self.s.writeSummaries(expected)
+        #print len(res)
+        # result = []
+        result = self.s.readSummaries() # res)
+        for i in range(len(result)):
+            self.assertEqual(result[i], expected[i])
+        
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -67,6 +67,7 @@ class TestSerializer(unittest.TestCase):
         self.assertTrue(result, 4)
         
         result = self.s.autoReadObjectData("string5") # self.s.result[4:4+5], "string")
+        #print result
         self.assertTrue(result, "hello")
         
         result = self.s.autoReadObjectData("timestamp") # self.s.result[4:4+5], "string")
