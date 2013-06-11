@@ -8,8 +8,19 @@ class TestContextSummary(unittest.TestCase):
         db = {"GroupsEnumerated":3,
               "Group0":0,"Group1":1,"Group2":2
               }
+        self.db = db
         self.summary = ContextSummary(1, db)
         
+    def test_size(self):
+        #print len(self.db)
+        #print self.db
+        self.assertTrue(self.summary.size() == 4)
+        
+    def test_keySet(self):
+        keySet = self.summary.keySet()
+        expected = sorted(['Group1', 'Group0', 'GroupsEnumerated', 'Group2'])
+        self.assertTrue(expected == sorted(keySet))
+    
     def test_get(self):
         self.assertEqual(None, self.summary.get("FOO"))
         self.assertEqual(self.summary.get("Group0"), 0)
@@ -37,6 +48,11 @@ class TestContextSummary(unittest.TestCase):
               "Group0":0,"Group1":1,"Group2":2
               }
         summary = ContextSummary(1, db)
+        now = time.time()
+        summary.setTimestamp(now)
+        self.summary.setTimestamp(now)
+        #print summary.getTimestamp()
+        #print self.summary.getTimestamp()
         self.assertTrue(summary == self.summary)
         
     def test_getWireCopy(self):
@@ -62,11 +78,13 @@ class TestContextSummary(unittest.TestCase):
               "Group0":0,"Group1":1,"Group2":2
               }
         summary = ContextSummary(1, db)
-        time.sleep(0.1)
+        summary.setTimestamp(time.time())
+        time.sleep(0.01)
         db2 = {"GroupsEnumerated":3,
               "Group0":0,"Group1":1,"Group2":2
               }
         summary2 = ContextSummary(1, db2)
+        summary2.setTimestamp(time.time())
         
         self.assertTrue(summary.getTimestamp() < summary2.getTimestamp())
         

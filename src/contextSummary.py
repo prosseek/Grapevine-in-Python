@@ -2,13 +2,19 @@ import copy
 import time
 
 class ContextSummary(object):
-    def __init__(self, uid, db, hops = 3, tau = 3, timestamp = None):
+    def __init__(self, uid, db, hops = 3, timestamp = None):
         if timestamp is None: timestamp = time.time()
         self.db = db
         self.uid = uid
         #self.tau = tau
         self.hops = hops
         self.timestamp = timestamp
+        
+    def size(self):
+        return len(self.db)
+    
+    def keySet(self):
+        return self.db.keys()
         
     def getTimestamp(self):
         return self.timestamp
@@ -17,11 +23,13 @@ class ContextSummary(object):
         self.timestamp = timestamp
         
     def __str__(self):
-        return "(%d)[%d]:%s" % (self.uid, self.hops, str(self.db))
+        return "(%d)[%d]:%s - (%s)" % (self.uid, self.hops, str(self.db), self.timestamp)
         
     def __eq__(self, other):
+        #print type(self.timestamp)
         # http://stackoverflow.com/questions/1227121/compare-object-instances-for-equality-by-their-attributes-in-python
-        return (self.uid == other.uid) and (self.db == other.db)
+        return (self.uid == other.uid) and (self.db == other.db) \
+               and (self.hops == other.hops) and (abs(self.timestamp - other.timestamp) < 0.009)
         
     def getId(self):
         return self.uid
