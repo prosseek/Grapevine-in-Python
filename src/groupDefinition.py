@@ -1,11 +1,14 @@
 from util.groupUtils import *
 from util.util import *
+from groupContextSummary import *
 
 class GroupDefinition(object):
     def __init__(self, gId):
         self.gId = gId
     
     def handleContextSummary(self, currentGroupSummary, newSummary):
+        assert(type(currentGroupSummary) is GroupContextSummary)
+        assert(type(newSummary) is ContextSummary)
         """
         Make sure currentGroupSummary has newSummary in its member
         when newSummary has currentGroupSummary as its group
@@ -21,9 +24,12 @@ class GroupDefinition(object):
         #print currentGroupSummary
     
     def handleGroupSummary(self, currentGroupSummary, newGroupSummary):
+        assert(type(currentGroupSummary) is GroupContextSummary)
+        assert(type(newGroupSummary) is GroupContextSummary)
         memberIds = currentGroupSummary.getMemberIds()
         newMemberIds = newGroupSummary.getMemberIds()
         
+        # ??? The new
         newMemberIds = removeAll(newMemberIds, memberIds)
         #print newMemberIds
         currentGroupSummary.addMemberIds(newMemberIds)

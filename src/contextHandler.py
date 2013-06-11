@@ -1,5 +1,6 @@
 from groupDefinition import *
 from groupContextSummary import *
+from util.util import *
 
 DEFAULT_TAU = 3
 
@@ -39,11 +40,22 @@ class ContextHandler(object):
         
     def setReceivedSummaries(self, summaries):
         # Summary should be dict type
-        assert (type(summaries) is dict)
-        self.receivedSummaries = summaries
+        if type(summaries) is dict:
+            self.receivedSummaries = summaries
+        elif type(summaries) is list:
+            self.receivedSummaries = {}
+            for summary in summaries:
+                uid = summary.getId()
+                self.receivedSummaries[uid] = summary
+        else:
+            raise Exception("Only list or dict is allowed for input")
+        return self.receivedSummaries
     
     def getReceivedSummaries(self):
         return self.receivedSummaries
+        
+    def resetGroupDefinitions(self):
+        self.groupDefinitions = {}
         
     def getGroupContext(self, gId):
         if gId in self.groupContexts:
@@ -54,6 +66,7 @@ class ContextHandler(object):
     def setGroupContexts(self, groupContexts):
         assert (type(groupContexts) is dict)
         self.groupContexts = groupContexts
+        return self.groupContexts
         
     def getGroupContexts(self):
         return self.groupContexts
@@ -72,8 +85,8 @@ class ContextHandler(object):
         1. for all groupDefiniton, find 
         """
         #print summaries
-        for groupDefintion in groupDefinitions.values():
-            gid = groupDefintion.getId()
+        for gd in groupDefinitions.values():
+            gid = gd.getId()
             groupSummary = self.groupContexts[gid]
             #print groupSummary
             
@@ -81,14 +94,15 @@ class ContextHandler(object):
                 uid = summary.getId()
                 #print uid
                 if uid == gid:
-                    groupDefinition.handleGroupSummary(groupSummary, summary)
+                    #print gid
+                    gd.handleGroupSummary(groupSummary, summary)
                     # ????
                     # Why remove summary
                     del summary
                 else:
                     #print groupSummary
                     #print summary
-                    groupDefintion.handleContextSummary(groupSummary, summary)
+                    gd.handleContextSummary(groupSummary, summary)
                     #print groupSummary
     
     def setupGroupDefinition(self, groupDefinition):
@@ -149,12 +163,19 @@ class ContextHandler(object):
                     or (summary.getTimestamp() == existing.getTimestamp() and summary.getHops() >= existing.getHops()):
                     continue # skip when time stamp is older (smaller) or tau is longer (bigger)
             #print summary
-            
+            # dprint(summary)
+            # if type(summary) is GroupContextSummary: dprint('group')
+            # else: dprint('non group')
             summariesToPut.append(summary)
         
+        #print summariesToPut
+        #for s in summariesToPut:
+        #    print s.getId()
         ### ???
         # Why do we need this?
+        #dprint(summariesToPut)
         self.performGroupFormations(self.groupDefinitions, summariesToPut);
+        
         #print summariesToPut
         # Evan's code uses notification, but not this
         for summaryToPut in summariesToPut:
@@ -195,6 +216,7 @@ class ContextHandler(object):
         
     def resetAllSummarydata(self):
         self.setMyContext(None)
+        self.resetGroupDefinitions()
         self.setGroupContexts({})
         self.setReceivedSummaries({})
         

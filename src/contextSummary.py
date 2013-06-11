@@ -34,6 +34,9 @@ class ContextSummary(object):
     def getId(self):
         return self.uid
         
+    def setId(self, uid):
+        self.uid = uid
+        
     def get(self, key):
         if key in self.db:
             return self.db[key]
@@ -58,6 +61,7 @@ class ContextSummary(object):
         return self.getWireCopy()
         
     def incrementHops(self):
+        #raise Exception("WHY???")
         self.hops += 1
         
     # def getTau(self):

@@ -7,6 +7,7 @@ from groupContextSummary import *
 
 class TestContextHandler(unittest.TestCase):
     def setUp(self):
+        ContextHandler.singleton = None # Refresh
         self.c = ContextHandler().getInstance()
         db = {"GroupsEnumerated":3,
               "Group0":100,"Group1":102,"Group2":103,
@@ -20,10 +21,11 @@ class TestContextHandler(unittest.TestCase):
               }
         self.summary2 = ContextSummary(22, db2)
         #print GroupContextSummary(1000)
-        
+        #dprint(self.c.getGroupContexts())
         
     def tearDown(self):
-        ContextHandler.singleton = None
+        pass
+        #ContextHandler.singleton = None
         #GroupContextSummary(100)
         
     def test_setMyContext(self):
@@ -79,10 +81,13 @@ class TestContextHandler(unittest.TestCase):
     def test_addGroupDefinition(self):
         # addGroupDefiniton
         # assumes myContext and received summaries are already set
+        #dprint(self.c.getGroupContext(100))
         g = GroupDefinition(100)
+        #dprint(self.c.getGroupContext(100))
         self.c.setMyContext(self.summary)
+        #dprint(self.c.getGroupContext(100))
         self.c.setReceivedSummaries({22:self.summary2})
-        
+        #dprint(self.c.getGroupContext(100))
         self.assertTrue(self.c.getGroupContext(100) is None)
         
         self.c.addGroupDefinition(g)
@@ -322,6 +327,14 @@ class TestContextHandler(unittest.TestCase):
         # b = self.c.getGroupSummary(100)
         # self.assertFalse(id(a) == id(b))
         # self.assertTrue(a == b)
+        
+    def test_setReceivedSummaries_listInput(self):
+        inputs = [self.summary, self.summary2]
+        self.c.setReceivedSummaries(inputs)
+        summaries = self.c.getReceivedSummaries()
+        # summaries is a dictionary
+        for summary in summaries.values():
+            self.assertTrue(summary in inputs)
         
 if __name__ == "__main__":
     unittest.main(verbosity=2)
