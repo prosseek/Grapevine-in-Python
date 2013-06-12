@@ -2,8 +2,10 @@ import copy
 import time
 
 class ContextSummary(object):
-    def __init__(self, uid, db, hops = 3, timestamp = None):
+    def __init__(self, uid, db = None, hops = 3, timestamp = None):
         if timestamp is None: timestamp = time.time()
+        if db is None: db = {}
+        
         self.db = db
         self.uid = uid
         #self.tau = tau
