@@ -26,14 +26,26 @@
 4. I need to get the cross platform hasher function that will give me the same numbers under all circimstances.
 
 ## TODO
+1. Serialize bloomier filter
+2. Use network to identify the uid
+3. Zip the serialize data 
+4. Use TCP for broadcasting communication
+5. Find network interfaces automatically for a comptuter
+
+## MIDTERM TODO
 1. Using MD5 algorithm, make the hash code generator for grapevine
 2. Rewrite the Java code based on the simplified code
 3. We need a checker for contextHandler
     1. input: data for contextHandler
     2. output: true/false if the contextHandler data is well organized - group member connection for example.
+4. Internal state debugger. We need some debugging environment to trace the inner workings of grapevine
 
 ## Research questions
 1. The current group formation is good enough? What other strategies?
+2. Understand how to network communicate between grapevine devices. Just broadcasting is good? 
+
+## Modifications from Java implementation
+1. Java Grapevine uses ByteBuffer class for packing payload. we don't. 
 
 
 [grapevine]: http://mpc.ece.utexas.edu/research/grapevine "Grapevine project"

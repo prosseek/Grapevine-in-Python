@@ -30,8 +30,11 @@ class ContextSummary(object):
     def __eq__(self, other):
         #print type(self.timestamp)
         # http://stackoverflow.com/questions/1227121/compare-object-instances-for-equality-by-their-attributes-in-python
+        return self.sameExceptHops(other) and (self.hops == other.hops) 
+               
+    def sameExceptHops(self, other):
         return (self.uid == other.uid) and (self.db == other.db) \
-               and (self.hops == other.hops) and (abs(self.timestamp - other.timestamp) < 0.009)
+               and  (abs(self.timestamp - other.timestamp) < 0.009)
         
     def getId(self):
         return self.uid

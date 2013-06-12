@@ -25,8 +25,9 @@ def getDeclaredMemberships(summary):
     """
     result = []
     groupSize = summary.get(GROUP_DECLARATIONS_ENUMERATED)
-    for i in range(groupSize):
-        result.append(summary.get(GROUP_DECLARATION_PREFIX + str(i)))
+    if groupSize is not None:
+        for i in range(groupSize):
+            result.append(summary.get(GROUP_DECLARATION_PREFIX + str(i)))
     return result
     
 def addDeclaredGroupMembership(summary, gId):

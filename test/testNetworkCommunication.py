@@ -9,6 +9,7 @@ sys.path.append("../src")
 from contextSummary import *
 from contextHandler import *
 
+# This address should be retrieved automatically
 BROADCAST_ADDRESS = "192.168.65.255"
 PORT = 4499
 
@@ -27,15 +28,16 @@ class PingerThread (threading.Thread):
         time.sleep(0.1)
         cs.sendto('This is a test', (BROADCAST_ADDRESS, PORT))
 
-class TestCommunication(unittest.TestCase):
+class TestNetworkCommunication(unittest.TestCase):
     def setUp(self):
         self.inetAddress = BROADCAST_ADDRESS # BROADCAST_ADDRESS;
         self.pingPort = PORT
         
-    def test_broadcast(self):
+    def test_udp_broadcast(self):
         a = PingerThread()
         a.start()
 
+        # connectionless communication
         cs = socket(AF_INET, SOCK_DGRAM)
         try:
             cs.bind((self.inetAddress, self.pingPort))
@@ -52,26 +54,26 @@ class TestCommunication(unittest.TestCase):
         #  netcat -u 192.168.1.3 44444
         # http://stackoverflow.com/questions/10887844/python-and-udp-listening
         
-    def test_basic(self):
-        # def __init__(self, uid, db, hops = 3, timestamp = None):
-        # The id should be retreived from the 
-        # UUID macUuid = UUID.nameUUIDFromBytes(macAddress);
-        # id = macUuid.hashCode();
-                        
-        summary = ContextSummary(1);
-        summary.put("test value 1", 1);
-        summary.put("test value 2", 2);
-        #print summary.db
-        
-        handler = ContextHandler.getInstance()
-        handler.updateLocalSummary(summary)
-        
-        # byte[] message = "PING MESSAGE".getBytes();
-        # DatagramPacket packet = new DatagramPacket(message, message.length, BROADCAST_ADDRESS,
-        #                                            PING_PORT);
-
-        # DatagramSocket socket = new ContextShimmedDatagramSocket();
-        # socket.send(packet);
+    # def test_basic(self):
+    #     # def __init__(self, uid, db, hops = 3, timestamp = None):
+    #     # The id should be retreived from the 
+    #     # UUID macUuid = UUID.nameUUIDFromBytes(macAddress);
+    #     # id = macUuid.hashCode();
+    #                     
+    #     summary = ContextSummary(1);
+    #     summary.put("test value 1", 1);
+    #     summary.put("test value 2", 2);
+    #     #print summary.db
+    #     
+    #     handler = ContextHandler.getInstance()
+    #     handler.updateLocalSummary(summary)
+    #     
+    #     # byte[] message = "PING MESSAGE".getBytes();
+    #     # DatagramPacket packet = new DatagramPacket(message, message.length, BROADCAST_ADDRESS,
+    #     #                                            PING_PORT);
+    # 
+    #     # DatagramSocket socket = new ContextShimmedDatagramSocket();
+    #     # socket.send(packet);
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

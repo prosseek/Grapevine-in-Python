@@ -1,5 +1,6 @@
 import unittest
 import sys
+import copy
 sys.path.append("../src")
 
 from contextShim import *
@@ -72,6 +73,11 @@ class TestContextShim(unittest.TestCase):
                     hit += 1
 
         self.assertTrue(hit == 4)
+        
+    def test_sameExceptHops(self):
+        summary = copy.deepcopy(self.summary)
+        summary.setHops(100)
+        self.assertTrue(summary.sameExceptHops(self.summary))
         
 if __name__ == "__main__":
     unittest.main(verbosity=2)

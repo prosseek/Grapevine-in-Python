@@ -19,6 +19,10 @@ class ContextHandler(object):
         self.tau = DEFAULT_TAU if tau is None else tau
         
     @staticmethod
+    def resetContextHandler():
+        ContextHandler.singleton = None
+        
+    @staticmethod
     def getInstance():
         if ContextHandler.singleton is None:
             ContextHandler.singleton = ContextHandler()
