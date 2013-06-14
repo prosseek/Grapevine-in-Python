@@ -10,7 +10,7 @@
 <ol style="list-style-type: decimal">
 <li>writeSummaries/readSummaries instead of &quot;writeObjectData/readObjectData&quot;</li>
 </ol></li>
-<li>Use my own serializer instead of using Kryo
+<li>Use my own serializer instead of Java library Kryo/ByteStream
 <ol style="list-style-type: decimal">
 <li>Every serialized data is now byte stream (in other words, string).</li>
 <li>We have our own format for the serialization, and we can be smarter
@@ -18,10 +18,16 @@
 <li>We can use C type string, instead of Pascal type to save more space</li>
 <li>We can strip off the first bytes of timestamp data - it will be the same all the time</li>
 </ol></li>
-<li>We can do some optimization on the byte stream: zip or others</li>
-<li>Can be class platform</li>
+<li>We can use zip to reduce the size of the byte stream</li>
+<li>Can be cross-platform as we use byte stream (string) for payload</li>
 </ol></li>
-<li>Remove not using facility: observer pattern</li>
+<li>Remove not used code: observer pattern</li>
+</ol>
+<h2 id="limitations">Limitations</h2>
+<ol style="list-style-type: decimal">
+<li>The network test uses only UDP broadcasting, no TCP/IP networking implemented.</li>
+<li>No network interface search code implemented, just uses local ip and port.</li>
+<li>id is just given as number, but we need a feature to assign id based on network.</li>
 </ol>
 <h2 id="things-to-consider">Things to consider</h2>
 <ol style="list-style-type: decimal">
@@ -37,10 +43,9 @@
 <h2 id="todo">TODO</h2>
 <ol style="list-style-type: decimal">
 <li>Serialize bloomier filter</li>
-<li>Use network to identify the uid</li>
 <li>Zip the serialize data</li>
-<li>Use TCP for broadcasting communication</li>
-<li>Find network interfaces automatically for a comptuter</li>
+<li>C++ implementation</li>
+<li>Design documentation - with beamer</li>
 </ol>
 <h2 id="midterm-todo">MIDTERM TODO</h2>
 <ol style="list-style-type: decimal">
@@ -57,8 +62,5 @@
 <ol style="list-style-type: decimal">
 <li>The current group formation is good enough? What other strategies?</li>
 <li>Understand how to network communicate between grapevine devices. Just broadcasting is good?</li>
-</ol>
-<h2 id="modifications-from-java-implementation">Modifications from Java implementation</h2>
-<ol style="list-style-type: decimal">
-<li>Java Grapevine uses ByteBuffer class for packing payload. we don't.</li>
+<li>Do we need special protocol for grapevine network communication? <a href="http://stackoverflow.com/questions/31572/broadcast-like-udp-with-the-reliability-of-tcp">broadcasting_tcp</a></li>
 </ol>

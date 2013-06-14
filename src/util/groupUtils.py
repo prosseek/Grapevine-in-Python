@@ -7,7 +7,8 @@
 # public static final String IDS_AGGREGATED = "IdsAggregated";
 
 import sys
-sys.path.append("..")
+import os.path
+sys.path.append(os.path.abspath(".."))
 from contextSummary import *
 
 GROUP_DECLARATIONS_ENUMERATED = "GroupsEnumerated"
@@ -20,9 +21,6 @@ ID_AGGREGATION_PREFIX = "Id"
 IDS_AGGREGATED = "IdsAggregated"
 
 def getDeclaredMemberships(summary):
-    """
-    In Java: getDeclaredMemberships
-    """
     result = []
     groupSize = summary.get(GROUP_DECLARATIONS_ENUMERATED)
     if groupSize is not None:
@@ -67,14 +65,15 @@ def addGroupMember(groupSummary, id):
     else:
         membersEnumerated = 0
         
-    # ???
-    # add id only when id is not already a member
     members = getGroupMembers(groupSummary)
     if not (id in members):
         groupSummary.put(MEMBER_PREFIX + str(membersEnumerated), id)
         groupSummary.put(MEMBERS_ENUMERATED, membersEnumerated + 1)
     
 def getGroupMembers(groupSummary):
+    """
+    The point is that the returned members are newly created. 
+    """
     members = []
     membersEnumerated = groupSummary.get(MEMBERS_ENUMERATED)
     if membersEnumerated is not None:
@@ -102,6 +101,8 @@ def setGroupMembers(groupSummary, memberIds):
     if previousNumberOfMembers is not None:
         for index in range(newNumberOfMembers, previousNumberOfMembers):
             groupSummary.remove(MEMBER_PREFIX + str(index))
+    
+    # 1. remove all the previous members
             
 def isAggregated(summary, idToCheck):
     idsAggregated = getAggregatedIds(summary)
@@ -184,10 +185,17 @@ def updateGroupAggForOneSummary(groupSummary, summary):
 def updateGroupAgg(groupSummary, summaries):
     for summary in summaries:
         updateGroupAggForOneSummary(groupSummary, summary)
-
         
 if __name__ == "__main__":
-    sys.path.append("../../test/testUtil")
-    from testGroupUtils import *
+    import os.path
+    
+    # Hack 
+    # The current directory ("src/util") is the top of the sys.path
+    # And it will block the correct module finding especially when util.groupUtils are called.
+    # By making the current directory to the last item, we enable calling util.groupUtils as
+    # "src" will be found before the "src/util"
+    sys.path.append(sys.path.pop(0))
+    sys.path.append(os.path.abspath("../../test"))
+    from testUtil.testGroupUtils import *
     
     unittest.main(verbosity=2)

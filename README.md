@@ -8,14 +8,19 @@
     1. Only ContextSummary/GroupContextSummary
 2. Make some of the API names clear
     1. writeSummaries/readSummaries instead of "writeObjectData/readObjectData" 
-3. Use my own serializer instead of using Kryo
+3. Use my own serializer instead of Java library Kryo/ByteStream
     1. Every serialized data is now byte stream (in other words, string). 
     2. We have our own format for the serialization, and we can be smarter
         1. We can use C type string, instead of Pascal type to save more space
         2. We can strip off the first bytes of timestamp data - it will be the same all the time
-    3. We can do some optimization on the byte stream: zip or others
-    4. Can be class platform 
-4. Remove not using facility: observer pattern
+    3. We can use zip to reduce the size of the byte stream
+    4. Can be cross-platform as we use byte stream (string) for payload
+4. Remove not used code: observer pattern
+
+## Limitations
+1. The network test uses only UDP broadcasting, no TCP/IP networking implemented.
+2. No network interface search code implemented, just uses local ip and port.
+3. id is just given as number, but we need a feature to assign id based on network.
 
 ## Things to consider
 1. Do we really need GroupDefinition?
@@ -27,10 +32,9 @@
 
 ## TODO
 1. Serialize bloomier filter
-2. Use network to identify the uid
-3. Zip the serialize data 
-4. Use TCP for broadcasting communication
-5. Find network interfaces automatically for a comptuter
+2. Zip the serialize data
+3. C++ implementation
+4. Design documentation - with beamer
 
 ## MIDTERM TODO
 1. Using MD5 algorithm, make the hash code generator for grapevine
@@ -43,9 +47,7 @@
 ## Research questions
 1. The current group formation is good enough? What other strategies?
 2. Understand how to network communicate between grapevine devices. Just broadcasting is good? 
+3. Do we need special protocol for grapevine network communication? [broadcasting_tcp]
 
-## Modifications from Java implementation
-1. Java Grapevine uses ByteBuffer class for packing payload. we don't. 
-
-
+[broadcasting_tcp]: http://stackoverflow.com/questions/31572/broadcast-like-udp-with-the-reliability-of-tcp
 [grapevine]: http://mpc.ece.utexas.edu/research/grapevine "Grapevine project"

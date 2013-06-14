@@ -41,8 +41,14 @@ class TestContextShimmedDatagramSocket(unittest.TestCase):
         a = PingerThread()
         a.start()
         
-        self.c.receive()
+        payload, summaries = self.c.receive()
+        self.assertTrue(2, summaries[0].get("test value 2"))
+        self.assertTrue(1, summaries[0].get("test value 1"))
+        
         handler = ContextHandler.getInstance()
+        summary = handler.get(1)
+        self.assertTrue(2, summary.get("test value 2"))
+        self.assertTrue(1, summary.get("test value 1"))
         
 if __name__ == "__main__":
     unittest.main(verbosity=2)

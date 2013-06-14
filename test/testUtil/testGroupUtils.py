@@ -1,11 +1,13 @@
 import unittest
 import sys
+import os.path
 
 # src should come first as the util.groupUtils things
-sys.path.append("../../src")
-sys.path.append("../../src/util")
+sys.path.append(os.path.abspath("../../src"))
 
-from groupUtils import *
+#print sys.path
+
+from util.groupUtils import *
 from contextSummary import *
 from groupContextSummary import *
 
@@ -68,6 +70,7 @@ class TestGroupUtils(unittest.TestCase):
         
     def test_addGroupMember(self):
         addGroupMember(self.groupSummaryNull, 1200)
+        self.assertEqual(getGroupMembers(self.groupSummaryNull), [1200])
         
     def test_getGroupMembers(self):
         members = getGroupMembers(self.groupSummaryNull)

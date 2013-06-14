@@ -13,7 +13,7 @@ from contextHandler import *
 BROADCAST_ADDRESS = "192.168.65.255"
 PORT = 4499
 
-class PingerThread (threading.Thread):
+class PingerThreadUdp (threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
 
@@ -32,9 +32,9 @@ class TestNetworkCommunication(unittest.TestCase):
     def setUp(self):
         self.inetAddress = BROADCAST_ADDRESS # BROADCAST_ADDRESS;
         self.pingPort = PORT
-        
+    
     def test_udp_broadcast(self):
-        a = PingerThread()
+        a = PingerThreadUdp()
         a.start()
 
         # connectionless communication

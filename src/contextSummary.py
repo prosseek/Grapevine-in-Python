@@ -12,18 +12,6 @@ class ContextSummary(object):
         self.hops = hops
         self.timestamp = timestamp
         
-    def size(self):
-        return len(self.db)
-    
-    def keySet(self):
-        return self.db.keys()
-        
-    def getTimestamp(self):
-        return self.timestamp
-    
-    def setTimestamp(self, timestamp):
-        self.timestamp = timestamp
-        
     def __str__(self):
         return "(%d)[%d]:%s - (%s)" % (self.uid, self.hops, str(self.db), self.timestamp)
         
@@ -35,6 +23,18 @@ class ContextSummary(object):
     def sameExceptHops(self, other):
         return (self.uid == other.uid) and (self.db == other.db) \
                and  (abs(self.timestamp - other.timestamp) < 0.009)
+               
+    def size(self):
+        return len(self.db)
+    
+    def keySet(self):
+        return self.db.keys()
+        
+    def getTimestamp(self):
+        return self.timestamp
+    
+    def setTimestamp(self, timestamp):
+        self.timestamp = timestamp
         
     def getId(self):
         return self.uid
