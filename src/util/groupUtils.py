@@ -8,6 +8,7 @@
 
 import sys
 import os.path
+
 sys.path.append(os.path.abspath(".."))
 from contextSummary import *
 
@@ -20,98 +21,87 @@ MEMBER_PREFIX = "Member"
 ID_AGGREGATION_PREFIX = "Id"
 IDS_AGGREGATED = "IdsAggregated"
 
-def getDeclaredMemberships(summary):
+###
+# Meta utilties
+###
+def getListFromSummary(summary, size_key, prefix_key):
+    """
+    For getAggregatedIds/getDeclaredMemberships
+    """
     result = []
-    groupSize = summary.get(GROUP_DECLARATIONS_ENUMERATED)
+    groupSize = summary.get(size_key)
     if groupSize is not None:
         for i in range(groupSize):
-            result.append(summary.get(GROUP_DECLARATION_PREFIX + str(i)))
+            result.append(summary.get(prefix_key + str(i)))
     return result
+
+def addItemIntoSummary(summary, size_key, prefix_key, value):
+    """
+    For addAggregatedId/addDeclaredGroupMembership
+    """
+    if summary.containsKey(size_key):
+        size = summary.get(size_key)
+    else:
+        size = 0
+    
+    newKey = prefix_key + str(size)
+    values = getListFromSummary(summary, size_key, prefix_key)
+    
+    #print >> sys.stderr, newKey
+    if not value in values:
+        summary.put(prefix_key + str(size), value)
+        summary.put(size_key, size + 1)
+        
+def addItemsIntoSummary(summary, size_key, prefix_key, values):
+    for value in values:
+        addItemIntoSummary(summary, size_key, prefix_key, value)
+        
+def removePrefix(summary, size_key, prefix_key):
+    size = summary.get(size_key)
+    if size is not None:
+        for index in range(size):
+            summary.remove(prefix_key + str(index))
+        #summary.put(size_key, 0)
+        summary.remove(size_key)
+        
+def isMember(summary, size_key, prefix_key, id):
+    items = getListFromSummary(summary, size_key, prefix_key)
+    return id in items;
+    
+def combineMembers(member1, member2):
+    result = []
+    for member in member1:
+        result.append(member)
+        
+    for member in member2:
+        if not member in member1:
+            result.append(member)
+    return result
+###
+# Meta utilties
+###
+
+def getDeclaredMemberships(summary):
+    return getListFromSummary(summary, GROUP_DECLARATIONS_ENUMERATED, GROUP_DECLARATION_PREFIX)
     
 def addDeclaredGroupMembership(summary, gId):
-    """
-    add gId into the membership, and re-enumerate
-    ??? Why we just append the new one ???
-    """
-    declaredMemberships = getDeclaredMemberships(summary)
-    # declaredMemberships.append(gId)
-    #print declaredMemberships
+    return addItemIntoSummary(summary, GROUP_DECLARATIONS_ENUMERATED, GROUP_DECLARATION_PREFIX, gId)
 
-    # I don't think this is necessary
-    # for i, g in enumerate(declaredMemberships):
-    #     summary.put(GROUP_DECLARATION_PREFIX + str(i), g)
-    length = len(declaredMemberships)
-    summary.put(GROUP_DECLARATION_PREFIX + str(length), gId)
-        
-    summary.put(GROUP_DECLARATIONS_ENUMERATED, length + 1)
-
-def declaresGroupMembership(summary, groupId):
-    """
-    Check summary is a member of groupId
-    In Java implementation: declaresGroupMembership
-    """
-    # 1. get group of summary
-    groups = getDeclaredMemberships(summary)
-    #print groups
-    return groupId in groups
+def declaresGroupMembership(summary, gId):
+    return isMember(summary, GROUP_DECLARATIONS_ENUMERATED, GROUP_DECLARATION_PREFIX, gId)
     
-def addGroupMember(groupSummary, id):
-    """
-    For the group summary add id as its member
-    *** id is added only when it's not already a member
-    """
-    if groupSummary.containsKey(MEMBERS_ENUMERATED):
-        membersEnumerated = groupSummary.get(MEMBERS_ENUMERATED)
-    else:
-        membersEnumerated = 0
-        
-    members = getGroupMembers(groupSummary)
-    if not (id in members):
-        groupSummary.put(MEMBER_PREFIX + str(membersEnumerated), id)
-        groupSummary.put(MEMBERS_ENUMERATED, membersEnumerated + 1)
+def addGroupMember(groupSummary, gId):
+    return addItemIntoSummary(groupSummary, MEMBERS_ENUMERATED, MEMBER_PREFIX, gId)
     
 def getGroupMembers(groupSummary):
-    """
-    The point is that the returned members are newly created. 
-    """
-    members = []
-    membersEnumerated = groupSummary.get(MEMBERS_ENUMERATED)
-    if membersEnumerated is not None:
-        for i, value in enumerate(range(membersEnumerated)):
-            #print i
-            #print groupSummary.get(MEMBER_PREFIX + str(i))
-            members.append(groupSummary.get(MEMBER_PREFIX + str(i)))
-    return members
+    return getListFromSummary(groupSummary, MEMBERS_ENUMERATED, MEMBER_PREFIX)
         
 def setGroupMembers(groupSummary, memberIds):
-    """
-    Make memberIds (set) as a member of groupSummary
-    ???
-    Why do we make this too complicated ???
-    Is this because the operation is expensive ???
-    """
-    previousNumberOfMembers = groupSummary.get(MEMBERS_ENUMERATED)
-    newNumberOfMembers = len(memberIds)
-    
-    # You need this code to reset the number
-    # groupSummary.put(MEMBERS_ENUMERATED, 0)
-    # for memberId in memberIds:
-    #     addGroupMember(groupSummary, memberId)
-    #     
-    # if previousNumberOfMembers is not None:
-    #     for index in range(newNumberOfMembers, previousNumberOfMembers):
-    #         groupSummary.remove(MEMBER_PREFIX + str(index))
-    
-    # 1. remove all the previous members
-    for index in range(previousNumberOfMembers):
-        groupSummary.remove(MEMBER_PREFIX + str(index))
-    groupSummary.put(MEMBERS_ENUMERATED, 0)
-    for memberId in memberIds:
-        addGroupMember(groupSummary, memberId)
+    removePrefix(groupSummary, MEMBERS_ENUMERATED, MEMBER_PREFIX)
+    addItemsIntoSummary(groupSummary, MEMBERS_ENUMERATED, MEMBER_PREFIX, memberIds)
             
 def isAggregated(summary, idToCheck):
-    idsAggregated = getAggregatedIds(summary)
-    return idToCheck in idsAggregated
+    return isMember(summary, IDS_AGGREGATED, ID_AGGREGATION_PREFIX, idToCheck)
     
 def haveNoCommonAggregation(summary1, summary2):
     ids1 = getAggregatedIds(summary1)
@@ -120,71 +110,39 @@ def haveNoCommonAggregation(summary1, summary2):
     return len (set(ids1) & set(ids2)) == 0
     
 def getAggregatedIds(summary):
-    ids = []
-    idsAggregated = summary.get(IDS_AGGREGATED)
-    if idsAggregated is not None:
-        for i in range(idsAggregated):
-            # mimic set operation 
-            if not (i in ids):
-                ids.append(summary.get(ID_AGGREGATION_PREFIX + str(i)))
-    #print ids
-    return ids
+    return getListFromSummary(summary, IDS_AGGREGATED, ID_AGGREGATION_PREFIX)
     
 def addAggregatedId(summary, memberId):
-    if summary.containsKey(IDS_AGGREGATED):
-        idsAggregated = summary.get(IDS_AGGREGATED)
-    else:
-        idsAggregated = 0
-        
-    summary.put(ID_AGGREGATION_PREFIX + str(idsAggregated), memberId)
-    summary.put(IDS_AGGREGATED, idsAggregated + 1)
+    return addItemIntoSummary(summary, IDS_AGGREGATED, ID_AGGREGATION_PREFIX, memberId)
     
 def setAggregatedIds(summary, aggregatedIds):
-    """
-    It's not Evan's API
-    """
-    previousNumberOfIds = summary.get(IDS_AGGREGATED)
-    #print summary
-    newNumberOfIds= len(aggregatedIds)
+    removePrefix(summary, IDS_AGGREGATED, ID_AGGREGATION_PREFIX)
+    addItemsIntoSummary(summary, IDS_AGGREGATED, ID_AGGREGATION_PREFIX, aggregatedIds)
     
-    summary.put(IDS_AGGREGATED, 0)
-    for memberId in aggregatedIds:
-        addAggregatedId(summary, memberId)
-        
-    #print previousNumberOfIds
-    if previousNumberOfIds is not None:
-        for index in range(newNumberOfIds, previousNumberOfIds):
-            #print index
-            summary.remove(ID_AGGREGATION_PREFIX + str(index))
-    
-def aggregateIntoGroupSummary(groupSummary, summary):
+def aggregateIntoGroupSummary(groupSummary1, groupSummary2):
     """
-    I guess groupSummary is only with memebers, and 
-    summary is only with aggregatedIds.
-    
-    This method is blindlingly merge the two information into one to
-    store back into groupSummary. 
+    combine all the members and aggregation of group1/group2 into group1
     """
-    # step 1 - find all the group members from groupSummary and summary
-    memberIds = getGroupMembers(groupSummary)
-    ###??? summary doesn't have the groupMember ???
-    memberIds += getGroupMembers(summary)
-    # step 2 - update the groupSummary
-    setGroupMembers(groupSummary, memberIds)
+    memberIds1 = getGroupMembers(groupSummary1)
+    memberIds2 = getGroupMembers(groupSummary2)
+    memberIds = combineMembers(memberIds1, memberIds2)
+    setGroupMembers(groupSummary1, memberIds)
     
     # Do the same thing with aggregation
-    aggregatedIds = getAggregatedIds(groupSummary)
-    aggregatedIds += getAggregatedIds(summary)
-    setAggregatedIds(groupSummary, aggregatedIds)
-    ### temporal
+    aggregatedIds1 = getAggregatedIds(groupSummary1)
+    aggregatedIds2 = getAggregatedIds(groupSummary2)
+    aggregatedIds = combineMembers(aggregatedIds1, aggregatedIds2)
+    setAggregatedIds(groupSummary1, aggregatedIds)
 
 def updateGroupAggForOneSummary(groupSummary, summary):
+    """
+    WHY??? - totally cryptic
+    """
     gid = groupSummary.getId()
     #print declaresGroupMembership(summary, gid)
     if (declaresGroupMembership(summary, gid) or summary.getId() == gid) \
        and not isAggregated(groupSummary, summary.getId) \
        and haveNoCommonAggregation(groupSummary, summary):
-        #print gid
         aggregateIntoGroupSummary(groupSummary, summary)
         
 def updateGroupAgg(groupSummary, summaries):

@@ -26,6 +26,7 @@ class TestGroupContextSummary(unittest.TestCase):
         ids = [1,2,3,4,5]
         g = GroupContextSummary(101)
         g.addMemberIds(ids)
+        #print g
         
         copiedGroup = g.getGroupCopy()
         self.assertTrue(copiedGroup == g)
