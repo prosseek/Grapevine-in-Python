@@ -94,15 +94,20 @@ def setGroupMembers(groupSummary, memberIds):
     newNumberOfMembers = len(memberIds)
     
     # You need this code to reset the number
+    # groupSummary.put(MEMBERS_ENUMERATED, 0)
+    # for memberId in memberIds:
+    #     addGroupMember(groupSummary, memberId)
+    #     
+    # if previousNumberOfMembers is not None:
+    #     for index in range(newNumberOfMembers, previousNumberOfMembers):
+    #         groupSummary.remove(MEMBER_PREFIX + str(index))
+    
+    # 1. remove all the previous members
+    for index in range(previousNumberOfMembers):
+        groupSummary.remove(MEMBER_PREFIX + str(index))
     groupSummary.put(MEMBERS_ENUMERATED, 0)
     for memberId in memberIds:
         addGroupMember(groupSummary, memberId)
-        
-    if previousNumberOfMembers is not None:
-        for index in range(newNumberOfMembers, previousNumberOfMembers):
-            groupSummary.remove(MEMBER_PREFIX + str(index))
-    
-    # 1. remove all the previous members
             
 def isAggregated(summary, idToCheck):
     idsAggregated = getAggregatedIds(summary)
