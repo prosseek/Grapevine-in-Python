@@ -49,7 +49,7 @@ def addItemIntoSummary(summary, size_key, prefix_key, value):
     
     #print >> sys.stderr, newKey
     if not value in values:
-        summary.put(prefix_key + str(size), value)
+        summary.put(newKey, value)
         summary.put(size_key, size + 1)
         
 def addItemsIntoSummary(summary, size_key, prefix_key, values):

@@ -179,7 +179,7 @@ class TestGroupUtils(unittest.TestCase):
         # 2. not isAggregated(groupSummary, summary.getId)
         self.assertFalse(isAggregated(groupSummary, summary.getId()))
         # 3. haveNoCommonAggregation(groupSummary, summary)
-        self.assertTrue(groupSummary, summary)
+        self.assertTrue(haveNoCommonAggregation(groupSummary, summary))
         
         # Then aggregateIntoGroupSummary(groupSummary, summary)
         #_updateGroupAgg(groupSummary, summary)
