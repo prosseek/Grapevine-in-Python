@@ -196,11 +196,11 @@ class ContextHandler(object):
         
         return None
     
-    # ???
-    def getWithKey(self, uid, key):
-        summary = self.get(uid)
-        if summary is None: return None
-        return summary[uid]
+    # # ???
+    # def getWithKey(self, uid, key):
+    #     summary = self.get(uid)
+    #     if summary is None: return None
+    #     return summary[uid]
         
     def getSummariesToSend(self):
         summaries = []
