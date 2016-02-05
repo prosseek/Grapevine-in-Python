@@ -1,4 +1,4 @@
-# grapevine Python
+# Grapevine Python
 
 [Grapevine] [grapevine] implementation in Python
 
